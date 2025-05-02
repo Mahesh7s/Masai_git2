@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<style>
+     #msg{
+		color:red;
+		text-align:center;
+	 }
+	 table,th,td {
+  border: 1px solid black;
+}
+th {
+  text-align: center;
+  padding: 10px;
+}
+td {
+  text-align: left;
+  padding: 10px;
+  vertical-align: middle;
+}
+
+
+	 table{
+		border-collapse:collapse;
+	 }
+
+
+</style>
+<body>
+<div id="data">
+	<table>
+		<thead>
+			<tr><th>NAME</th>
+			<th>Email</th></tr>
+		</thead><tbody>
+
+		</tbody>
+	</table>
+
+</div>
+<div id="msg"></div>
+
+	
+</body>
+<script>
+	window.onload=fetchusers;
+	async function fetchusers() {
+    try {
+        let res = await fetch("https://moviedatabase-a4d04-default-rtdb.asia-southeast1.firebasedatabase.app/users.json");
+        if (res.ok) {
+            let data = await res.json();
+            let arr = Object.entries(data);
+            let fd = arr.map(([id, movie]) => ({ id, ...movie }));
+            console.log(fd);
+
+            let tbo = document.querySelector("tbody");
+            tbo.innerHTML = ""; // Clear previous rows if any
+
+            for (let i = 0; i < fd.length; i++) {
+                tbo.innerHTML += `
+                    <tr>
+                        <td>${fd[i].name}</td>
+                        <td>${fd[i].email}</td>
+                    </tr>
+                `;
+            }
+        }
+    } catch (err) {
+		let msg=document.getElementById("msg")
+		msg.innerHTML=`
+		<h3>AN ERROR OCCURED ${err}...</h3>
+		`
+
+        //console.log("AN ERROR", err);
+    }
+}
+
+
+</script>
+</html>

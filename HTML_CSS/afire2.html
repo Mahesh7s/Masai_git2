@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head><style>
+	#msg{
+		color:green;
+	}
+</style>
+<body>
+	<form action="" id="reg">
+		<input type="text" placeholder="Enter Your name:" id="name">
+		<input type="email" id="mail" placeholder="Enter your email">
+		<button id="submit">Submit</button>
+	</form>
+	<div id="msg">
+
+	</div>	
+</body>
+<script>
+	let btn=document.getElementById("submit")
+	btn.addEventListener("click",async (eve)=>{
+		eve.preventDefault();
+let name=document.getElementById("name").value.trim()
+let email=document.getElementById("mail").value.trim()
+if(name!=""&& email!=""){
+    try{
+	let res= await fetch("https://moviedatabase-a4d04-default-rtdb.asia-southeast1.firebasedatabase.app/users.json",{
+		method:"POST",
+		headers:{
+			"Content-Type":"application/json"
+		},
+		body:JSON.stringify({name,email})
+
+	})
+	if(res.ok){
+		let msg=document.getElementById("msg")
+		msg.innerText="Data added Successfully!"
+	}
+	}catch(err){
+		let msg=document.getElementById("msg")
+		msg.innerText=`Failed to add! ${err}!!!!`
+	msg.style.color="red"
+	}
+
+//console.log(name,email)
+}else{
+	alert("Enter valid name and email address")
+}
+
+	})
+</script>
+</html>

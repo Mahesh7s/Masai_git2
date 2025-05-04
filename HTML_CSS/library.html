@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Library Management</title>
+	<style>
+		body{
+			font-family: Arial, Helvetica, sans-serif;
+			text-align: center;
+		}
+		#book-form{
+			display:block;
+			gap:20px;
+		}
+		input{
+			padding:5px;
+			margin:2px;
+			color:blue;
+		}
+
+		button{
+			background-color: rgb(243, 21, 62);
+			color:aliceblue;
+			font-weight: bold;
+			border-radius:10px;
+		}
+		#nov{
+			display:flex;
+			/* justify-content:center; */
+			align-items: center;
+			gap:20px;
+
+		}
+		#nov div{
+			margin-top:10px;
+			width:50%;
+			border:2px solid pink;
+			padding:5px;
+		}
+	</style>
+</head>
+<body>
+	<h1>Library MAnagement System</h1>
+	<div>
+		<h2>Add or Edit a book</h2>
+		<form id="book-form">
+			<input type="text" id="id" readonly>
+			<input type="text" id="title" placeholder="Title" required />
+			<input type="text" id="author" placeholder="Author" required />
+			<input type="text" id="genre" placeholder="Genre" required />
+			<input type="text" id="publishedYear" placeholder="Published Year" required />
+			
+			<!-- Checkbox for availability -->
+			<label>
+			  <input type="checkbox" id="available" />
+			  Available
+			</label>
+		  
+			<button type="submit" id="add">Add book</button>
+			<!-- <button type="submit" id="edit">Edit </button> -->
+		  </form>
+		 
+<div id="nov"></div>
+
+
+<h3>Add a New Member</h3>
+<form  id="member">
+   <input type="text" placeholder="Name of the member" id="member">
+<input type="date" placeholder="Membershipdate" id="date">
+<input type="checkbox" placeholder="isActive" id="active">yes
+
+<button type="submit" id="addm">Add Member</button>
+</form>
+
+
+<div id="books-container">
+
+</div>
+
+	</div>
+</body>
+<script>
+
+let base="https://moviedatabase-a4d04-default-rtdb.asia-southeast1.firebasedatabase.app/users"
+
+let fetchdata=[]
+
+async function fetchnovel(){
+	let res=await fetch(`${base}/books.json`)
+	let data =await res.json()
+	return Object.entries(data)
+    .filter(([id, novel]) => typeof novel === 'object' && novel.title && novel.author)
+    .map(([id, novel]) => ({ id, ...novel }));
+}
+
+
+
+
+document.getElementById("add").addEventListener("click",async (e)=>{
+	e.preventDefault()
+	let uni=document.getElementById("id").value.trim()
+	let newbook ={
+		title:document.getElementById("title").value,
+		author:document.getElementById("author").value,
+		genre:document.getElementById("genre").value,
+		publishedYear:document.getElementById("publishedYear").value,
+		available:document.getElementById("available").checked
+	}
+	try {
+    let res;
+    if (uni) {
+		console.log(uni)
+      // Update the existing book
+      res = await fetch(`${base}/books/${uni}.json`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newbook),
+      });
+    } else {
+      // Add a new book
+      res = await fetch(`${base}/books.json`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newbook),
+      });
+    }
+
+    // Wait for the response and only call display after it has succeeded
+    if (res.ok) {
+      display(); // Refresh the displayed data
+
+    } else {
+      alert("Failed to update the book.");
+    }
+  } catch (error) {
+    console.error("Error updating book:", error);
+  }
+
+  document.getElementById("book-form").reset();
+});
+
+window.onload=display;
+
+async function display(){
+
+	let list=document.getElementById("nov")
+	list.innerHTML=""
+	try{
+		fetchdata=  await fetchnovel()
+	   fetchdata.forEach(novel=>{
+		let di = document.createElement("div");
+		di.innerHTML=`
+		 <h3>TITLE :${novel.title} (${novel.publishedYear})
+		  </h3>
+		  <h5>Author:${novel.author}</h5>
+		  <p>Genre:${novel.genre}</p>
+		  <p>IS Avaialable:${novel.available}</p>
+		  <button id="edit" onclick="updateBook('${novel.id}','${novel.title}','${novel.author}','${novel.publishedYear}','${novel.genre}','${novel.available}')">Edit Book</button>
+		`
+       list.appendChild(di)
+
+	})
+	}
+	catch(err){
+		list.innerHTML=`
+		<p>An error occured ${err}
+		`
+	}
+    
+	
+
+
+
+}
+
+async function updateBook(id,title,author,year,genre,available){
+
+document.getElementById("id").value=id,
+document.getElementById("title").value=title,
+document.getElementById("author").value=author,
+document.getElementById("genre").value=genre,
+document.getElementById("publishedYear").value=year,
+document.getElementById("available").checked=available
+}
+
+
+
+
+
+// let res=await fetch(`${base}/books.json`,{
+// 	method:"POST",
+// 	headers:{
+// 		"Content-Type":"application/json"
+	
+// },
+// body:JSON.stringify(newbook)
+
+// })
+// let data= await res.json()
+// console.log(data)
+// let container = document.getElementById("books-container"); // Ensure this div exists in your HTML
+//   container.innerHTML = ""; // Clear old data
+
+//   for (let id in data) {
+//     let book = data[id];
+//     let bookDiv = document.createElement("div");
+//     bookDiv.innerHTML = `
+//       <h3>${book.title}</h3>
+//       <p>Author: ${book.author}</p>
+//       <p>Genre: ${book.genre}</p>
+//       <p>Published: ${book.publishedYear}</p>
+//       <p>Available: ${book.available ? "Yes" : "No"}</p>
+//       <hr/>
+//     `;
+//     container.appendChild(bookDiv);
+//   }
+
+
+
+// })
+
+
+
+
+
+</script>
+</html>

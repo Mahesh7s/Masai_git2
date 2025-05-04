@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Novel List</title>
+	<style>
+		body{
+			font-family: Georgia, 'Times New Roman', Times, serif;
+			text-align: center;
+		}
+		#nov {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Fix is here */
+  gap: 1rem; /* Optional: adds spacing between grid items */
+  padding: 1rem; /* Optional */
+}
+#nov div {
+  border: 2px solid;
+  padding: 10px;
+}
+	</style>
+
+</head>
+<body>
+	<h1>Welcome to Noveslia...</h1>
+
+
+	<h3>choose filters ,sorting and search</h3>
+	<input type="text" id="searchBox" placeholder="Search..." oninput="applyFilters()">
+<input type="number" id="startYear" placeholder="Start Year" oninput="applyFilters()">
+<input type="number" id="endYear" placeholder="End Year" oninput="applyFilters()">
+
+<select id="sortOption" onchange="applyFilters()">
+  <option value="">Sort by Price</option>
+  <option value="asc">Low to High</option>
+  <option value="desc">High to Low</option>
+</select>
+
+
+
+
+
+	<div id="nov">
+
+		
+
+
+	</div>
+
+
+	
+</body>
+<script>
+	let base = "https://moviedatabase-a4d04-default-rtdb.asia-southeast1.firebasedatabase.app/users/novels";
+let allNovels = []; // Full list fetched once
+
+async function fetchdata() {
+  let res = await fetch(`${base}.json`);
+  let data = await res.json();
+  return Object.values(data);
+}
+
+async function init() {
+  allNovels = await fetchdata();
+  applyFilters(); // Initial display
+}
+init()
+function display(data) {
+  const list = document.getElementById("nov");
+  list.innerHTML = "";
+  data.forEach(novel => {
+    const di = document.createElement("div");
+    di.innerHTML = `
+      <h3>${novel.title} (${novel.release_year})</h3>
+      <h5>${novel.author}</h5>
+      <p>PRICE: ${novel.price}</p>
+      <p>GENRE: ${novel.genre}</p>
+    `;
+    list.appendChild(di);
+  });
+}
+
+function applyFilters() {
+  let filtered = [...allNovels];
+
+  // 1. Filter by year
+  const start = parseInt(document.getElementById("startYear").value);
+  const end = parseInt(document.getElementById("endYear").value);
+  if (!isNaN(start) && !isNaN(end)) {
+    filtered = filtered.filter(novel =>
+      novel.release_year >= start && novel.release_year <= end
+    );
+  }
+
+  // 2. Search by title or author
+  const query = document.getElementById("searchBox").value.toLowerCase();
+  if (query) {
+    filtered = filtered.filter(novel =>
+      novel.title.toLowerCase().includes(query) ||
+      novel.author.toLowerCase().includes(query)
+    );
+  }
+
+  // 3. Sort by price
+  const sortOption = document.getElementById("sortOption").value;
+  if (sortOption === "asc") {
+    filtered.sort((a, b) => a.price - b.price);
+  } else if (sortOption === "desc") {
+    filtered.sort((a, b) => b.price - a.price);
+  }
+
+  // Display final result
+  display(filtered);
+}
+
+
+
+
+
+
+
+
+
+</script>
+</html>

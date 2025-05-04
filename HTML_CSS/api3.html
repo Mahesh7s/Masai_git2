@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<h2>Registration Form</h2>
+	<form id="userForm">
+		<input type="text" id="name" placeholder="Name" required />
+		<input type="email" id="email" placeholder="Email" required />
+		<button type="submit" id="submit">Add User</button>
+		<div id="message"></div>
+	  </form>
+
+	  <h3>ALL USERS</h3>
+	  <div id="users">
+
+	  </div>
+</body>
+<script>
+	window.onload = fetchusers;
+	
+	let users = document.getElementById("users");
+	let data=[]
+	async function fetchusers() {
+	  users.innerHTML = ""; // Clear previous entries
+	  try {
+		let res = await fetch("https://6812f130129f6313e20fdcdf.mockapi.io/users");
+		let dat = await res.json();
+		data=dat
+		dat.forEach(element => {
+		  let p = document.createElement("p");
+		  p.innerText = element.name + " - " + element.email;
+		  users.appendChild(p);
+		});
+	  } catch (error) {
+		console.error("Failed to fetch users:", error);
+		users.innerHTML = "<p style='color:red;'>Failed to load users.</p>";
+	  }
+	}
+	
+	let submit = document.getElementById("submit");
+	
+	submit.addEventListener("click", async (eve) => {
+	  eve.preventDefault();
+	
+	  let name = document.getElementById("name").value.trim();
+	  let email = document.getElementById("email").value.trim();
+	
+	  if (name !== "" && email !== "") {
+		if (!data.some(user =>
+      user.name.toLowerCase() === name.toLowerCase() ||
+      user.email.toLowerCase() === email.toLowerCase())) {
+
+		try {
+		  let res = await fetch("https://6812f130129f6313e20fdcdf.mockapi.io/users", {
+			method: "POST",
+			headers: {
+			  "Content-Type": "application/json"
+			},
+			body: JSON.stringify({ name, email })
+		  });
+	
+		  if (res.ok) {
+			alert("User added successfully!");
+			await fetchusers(); // Refresh the user list
+			document.getElementById("name").value = "";
+			document.getElementById("email").value = "";
+		  } else {
+			alert("Failed to add user.");
+		  }
+		} catch (error) {
+		  console.error("Error adding user:", error);
+		  alert("Something went wrong.");
+		}}
+		else{
+			alert("Dupliacte entries")
+			document.getElementById("name").value = "";
+			document.getElementById("email").value = "";
+		}
+	  } else {
+		alert("Please fill in both name and email.");
+	  }
+	});
+	</script>
+	
+</html>

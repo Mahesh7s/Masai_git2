@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		#display{
+			display:grid;
+			grid-template-columns: repeat(4,1fr);
+			gap:20px;
+		}
+		#display div{
+			width:30%;
+			border:2px solid;
+			border-radius:2px solid ;
+		}
+	</style>
+</head>
+<body>
+	<select name= "category" id="category">Choose the category
+		<option value="men's clothing">Mens clothing</option>
+		<option value="jewelery">Jewellery</option>
+		<option value="electronics">Electronics</option>
+		<option value="women's clothing">Womens Clothing</option>	
+	</select>
+	<input type="text" id="min" placeholder="Enter thr min price...">
+	<input type="text" id="max" placeholder="Enter the max price...">
+    <button id="search">Search for item</button>
+	<div id="display">
+
+	</div>
+</body>
+<script>
+	let search=document.getElementById("search")
+	search.addEventListener("click",async ()=>{
+	let category=document.getElementById("category").value 
+	let minprice=+document.getElementById("min").value
+	let maxprice=+document.getElementById("max").value
+	data= await fetchdata()
+	let rd=data.filter(item=>{
+		 return item.category==category && item.price>=minprice&&item.price<=maxprice
+	})
+       display(rd)
+	})
+	
+		
+	//console.log(search)
+	let data=[]
+	async function fetchdata(){
+		let res=await fetch("https://fakestoreapi.com/products")
+		let dat= await res.json()
+		//console.log(dat)
+		return dat
+	}
+     
+
+	function display(data){
+		let di=document.getElementById("display")
+		di.innerHTML=""
+		data.forEach(item=>{
+			let div = document.createElement("div")
+			div.innerHTML=`
+				<h3>${item.title}</h3>
+        <p>Category: ${item.category}</p>
+        <p>Price: $${item.price}</p>
+			`
+			di.appendChild(div)
+		})
+	}
+// 	fetch("https://fakestoreapi.com/products")
+//   .then(res => res.json())
+//   .then(data => console.log(data));
+</script>
+</html>

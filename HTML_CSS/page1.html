@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pagination Example</title>
+  <style>
+    #tasks div { margin: 5px 0; }
+    .pagination button {
+      margin: 2px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .active {
+      background-color: #007BFF;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h2>Task List</h2>
+  <div id="tasks"></div>
+  <div class="pagination" id="paginationButtons"></div>
+
+  <script>
+    const ITEMS_PER_PAGE = 10;
+    let currentPage = 1;
+    let todos = [];
+
+    // Fetch 200 tasks from JSONPlaceholder (example)
+    async function fetchTasks() {
+      const res = await fetch("https://jsonplaceholder.typicode.com/todos");
+      todos = await res.json();
+      renderTasks(currentPage);
+      renderPagination();
+    }
+
+    // Render tasks for the current page
+    function renderTasks(page) {
+      const tasksContainer = document.getElementById("tasks");
+      tasksContainer.innerHTML = "";
+
+      const start = (page - 1) * ITEMS_PER_PAGE;
+      const end = start + ITEMS_PER_PAGE;
+      const currentItems = todos.slice(start, end);
+
+      currentItems.forEach(task => {
+        const taskDiv = document.createElement("div");
+        taskDiv.innerHTML = `
+		<span>${task.title}</span>
+          <input type="checkbox" ${task.completed ? "checked" : ""} />
+          
+        `;
+        tasksContainer.appendChild(taskDiv);
+      });
+    }
+
+    // Render pagination buttons
+    function renderPagination() {
+      const totalPages = Math.ceil(todos.length / ITEMS_PER_PAGE);
+      const pagination = document.getElementById("paginationButtons");
+      pagination.innerHTML = "";
+
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = i;
+        if (i === currentPage) btn.classList.add("active");
+
+        btn.addEventListener("click", () => {
+          currentPage = i;
+          renderTasks(currentPage);
+          renderPagination();
+        });
+
+        pagination.appendChild(btn);
+      }
+    }
+
+    // Initial fetch
+    fetchTasks();
+  </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Student Profile Dashborad</title>
+	<style>
+		body{
+			text-align:center;
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+		}
+		nav{
+			background-color: blanchedalmond;
+			padding:20px;
+			display:flex;
+			justify-content: space-evenly;
+			align-items: center;
+		}
+		a{
+			text-decoration: none;
+			color: black;
+		}
+		#reg{
+			display:flex;
+			flex-direction: column;
+			gap:20px;
+			width:30%;
+			margin: auto;
+			padding:20px;
+			background-color: aqua;
+		}
+		#reg input,fieldset,select,button{
+			/* margin:5%; */
+			border:2px solid;
+			padding:10px;
+		}
+		#submit{
+		  width: 50%;
+		  text-align: center;
+		  background-color: brown;
+		  border-radius: 20px;
+		  margin-left:30%;
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<h1 id="heading1">Student Profile Dashborad</h1>
+		<nav>
+			<a href="./index.html" target="_blank">HOME</a>
+			<a href="./profile.html" target="_blank">PROFILE</a>
+			<a href="./settings.html" target="_blank">SETTINGS</a>
+		</nav>
+	</header>
+	<main>
+		<section id="register">
+			<h3>Regiester</h3>
+			<form  id="reg">
+				<input type="text" id="id" readonly>
+				<input type="text" placeholder="Name" id="name">
+				<input type="text" placeholder="Age" id="age">
+				<input type="email" placeholder="Email" id="email">
+				<select name="course" id="course">
+					<option value="">Select your Course</option>
+					<option value="java">JAVA</option>
+					<option value="python">PYTHON</option>
+					<option value="sql">SQL</option>
+					<option value="javascript">JAVA SCRIPT</option>
+				</select>
+				
+				<div><fieldset>
+				<legend>Select your Gender:</legend>
+				<input type="radio"  value="male" id="male" name="gender">
+				<label for="male">Make</label>
+				<input type="radio" value ="female" id="female" name="gender">
+				<label for="female">Female</label>
+			</fieldset></div>
+			
+			<div><fieldset>
+			
+				<legend>Choose your skills:</legend>
+				<label for="skill1">Skill 1</label>
+				<input type="checkbox" id="skill1">
+				<label for="skill2">Skill 2</label>
+				<input type="checkbox" id="skil2">
+				<label for="skill3">Skill 3</label>
+				<input type="checkbox" id="skill3">
+				<label for="skill4">Skill 4</label>
+				<input type="checkbox" id="skill4">
+			</fieldset>
+		</div>
+			<label for="profile">Choose a profile picture:</label>
+
+<input type="file" id="profile" name="profile" accept="image/png, image/jpeg" />
+             <button id="submit">Register</button>
+			</form>
+		</section>
+	</main>
+	
+</body>
+<script>
+	let data=[]
+	let id=document.getElementById("id").value
+	let name = document.getElementById("name").value.trim()
+		let age = document.getElementById("age").value.trim()
+		let email=document.getElementById("email").value.trim()
+		let course= document.getElementById("course").value
+		let gender=document.getElementById("male").value || document.getElementById("female").value
+		let image=document.getElementById("profile").value
+
+		let newbook={
+			name,age,email,course,gender,image
+		}
+
+  
+	document.getElementById("submit").addEventListener("click",async (e)=>{
+		e.preventDefault();
+		try{
+		let res= await fetch("https://student-3a9dd-default-rtdb.asia-southeast1.firebasedatabase.app/students.json",{
+			method:"POST",
+			headers:{
+				"Content-Type":"application/json"
+			},
+			body:JSON.stringify(newbook)
+		})
+		let data=  await res.json()
+		console.log(data)
+
+		}
+		catch(err){
+			console.log(err)
+		}
+	})
+   
+
+
+
+</script>
+</html>

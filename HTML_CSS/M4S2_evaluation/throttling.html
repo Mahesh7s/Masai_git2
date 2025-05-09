@@ -1,0 +1,81 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Throttled Image Slider</title>
+  <style>
+    img { width: 600px; height: 400px; display: block; margin-bottom: 10px; }
+    button { margin: 10px; }
+  </style>
+</head>
+<body>
+  <div id="imgl"></div>
+  <button id="prev">Previous</button>
+  <button id="next">Next</button>
+
+  <script>
+    let nextClicks = 0;
+    let lastClickTime = 0;
+    let currentSlide = 1;
+
+    const imgl = document.getElementById("imgl");
+    const nextBtn = document.getElementById("next");
+    const prevBtn = document.getElementById("prev");
+
+    function getRandomImageUrl() {
+      return `https://picsum.photos/600/400?random=${Math.random()}`;
+    }
+
+    function updateImage() {
+      imgl.innerHTML = `
+        <img src="${getRandomImageUrl()}" alt="random image">
+        <p>Slide #${currentSlide}</p>
+      `;
+    }
+
+    nextBtn.addEventListener("click", () => {
+      const now = Date.now();
+
+      if (now - lastClickTime < 1000) {
+        nextClicks++;
+        if (nextClicks > 3) {
+          alert("Chill chill, loading it!!");
+          nextClicks = 0; // Reset spam counter
+        }
+        return; // Throttle: block image update
+      }
+
+      // Reset counters & time
+      lastClickTime = now;
+      nextClicks = 1;
+
+      currentSlide++;
+      updateImage();
+    });
+
+    prevBtn.addEventListener("click", () => {
+      const now = Date.now();
+
+      if (now - lastClickTime < 1000) {
+        nextClicks++;
+        if (nextClicks > 3) {
+          alert("Chill chill, loading it!!");
+          nextClicks = 0;
+        }
+        return;
+      }
+
+      lastClickTime = now;
+      nextClicks = 1;
+
+      if (currentSlide > 1) currentSlide--;
+      updateImage();
+    });
+
+    // Load initial image
+    updateImage();
+  </script>
+</body>
+</html>

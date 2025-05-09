@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Debouncing</title>
+</head>
+<style>
+	#movie-list{
+		font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+	 	margin: auto;
+		 display: grid;
+		 grid-template-columns: repeat(auto,3fr);
+
+		 gap:20px;
+	}
+	#movie-list div{
+		border:2px solid;
+		width:40%;
+		
+
+	}
+</style>
+<body>
+	<h3>Debouncing </h3>
+	<input type="text" placeholder="Search for a movie" id="seach-movie">
+	
+	<h3>Here's your choice</h3>
+	<div id="movie-list">
+	
+	</div>
+
+	
+</body>
+
+</html>
+<script>
+	let timer;
+	let base="http://www.omdbapi.com/?i=tt3896198&apikey=3dc03caf"
+	document.getElementById("seach-movie").addEventListener("input",(event)=>{
+		clearTimeout(timer)
+		timer=setTimeout(()=>{
+			//console.log("Searching")
+			searchMovie(event.target.value);
+		},500)
+		//searchMovie(event.target.value);
+	})
+	// let type = "movie"
+	async function searchMovie(query){
+		let res = await fetch(`${base}&s=${query}`)
+		let data = await res.json()
+		let dataArray = data.Search
+		console.log(data.Search)
+		let list = document.getElementById("movie-list")
+		list.innerHTML = ""
+		if(!dataArray){
+			list.innerHTML="<p> No Movies Found...</p>"
+			return
+		} 
+		dataArray.forEach((movie)=>{
+			let div = document.createElement("div")
+			div.innerHTML =`
+				<p>Title : ${movie.Title}</p>
+				
+				<p> Release Year : ${movie.Year}</p>
+			`
+			list.appendChild(div)
+		})
+		
+			
+			
+		
+		
+	}
+</script>

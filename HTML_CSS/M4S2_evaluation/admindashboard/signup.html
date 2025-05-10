@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!DOCTYPE html>
+	<html>
+	<head>
+	  <meta charset="UTF-8">
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	  <title>Register</title>
+
+	<style>
+		*{
+			margin:0px;
+			padding:0px;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+		}
+		body{
+			background-color: #ffffff;
+			height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		h3{
+			text-align: center;
+			margin:20px;
+			
+		}
+		#signup-container{
+			max-width: 40%;
+			background-color: aliceblue;
+			width:90%;
+			border:2px solid;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			
+		}
+		input,select{
+			width:50%;
+			margin:5px;
+			padding:10px;
+			border:2px solid;
+			border-radius: 10px;
+			
+		}
+		select{
+			max-width:70%;
+			padding:5px;
+		}
+		button{
+			width:15%;
+			min-width: 20%;
+			border:2px solid;
+			border-radius: 10px;
+			padding:7px;
+			margin: 10px;
+			background-color: brown;
+			color: #ffffff;
+		}
+		p{
+			margin: 10px;
+		}
+		a{
+			text-decoration: none;
+			color:blue;
+			font-size: large;
+		}
+		#signup-msg{
+			color:red
+		}
+	</style>
+	</head>
+	<body>
+	  <div id="signup-container">
+		<h3>Register</h3>
+		<input type="email" placeholder="Enter Email" id="signup-email">
+		<input type="text" placeholder="Enter Name" id="signup-name">
+		<input type="password" placeholder="Enter Password" id="signup-password">
+		<select name="role" id="role">
+			<option value="user">USER</option>
+			<option value="admin">ADMIN</option>
+		</select>
+		<button id="signup-btn">Register</button>
+		<p>Already have an account?     <a href="./signin.html" target="_blank">Login</a></p>
+		<p id="signup-msg"></p>
+	  </div>
+	</body>
+<script type="module" src="./auth.js">
+  
+
+
+</script>
+
+	</html>
+
+	

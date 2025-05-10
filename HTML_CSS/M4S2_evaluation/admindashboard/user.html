@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<h1>Welcome <span id="user-email"></span>(<span id="user-role"></span>)</h1>
+	<button id="logout">LOGOUT</button>
+	<h2>Product List</h2>
+	<div id="product-list"></div>
+</body>
+<script type="module" src="./auth.js"></script>
+<script type="module">
+	import {auth,db} from "../admindashboard/firebaseconfig.js";
+import {createUserWithEmailAndPassword , signInWithEmailAndPassword,signOut,onAuthStateChanged  } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
+import { doc,setDoc,getDoc,getDocs,collection,addDoc,deleteDoc,updateDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+
+document.getElementById("user-email").innerText= localStorage.getItem("email");
+document.getElementById("user-role").innerText=localStorage.getItem("role");
+async function fetchproducts(){
+  // fetching data from a collection using getDocs
+	let querysnap = await getDocs(collection(db,"products"))
+	querysnap.forEach((element) => {
+		
+		let product = element.data();
+		
+		let id = element.id
+		displayProducts(product,id)
+	});
+	
+
+}
+function displayProducts(product, id) {
+	const container = document.getElementById("product-list");
+	container.innerHTML += `
+	  <div>
+		<h3>${product.title}</h3>
+		<img src="${product.image}" width="100">
+		<p>Price: ₹${product.price}</p>
+
+	  </div>
+	`;
+  }
+
+  fetchproducts()
+
+</script>
+</html>

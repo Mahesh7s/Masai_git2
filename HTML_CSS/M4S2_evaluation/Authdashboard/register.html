@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!DOCTYPE html>
+	<html>
+	<head>
+	  <meta charset="UTF-8">
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	  <title>Register</title>
+
+	<style>
+		*{
+			margin:0px;
+			padding:0px;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+		}
+		body{
+			background-color: #ffffff;
+			height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		h3{
+			text-align: center;
+			margin:20px;
+			
+		}
+		#signup-container{
+			background-color: aliceblue;
+			width:90%;
+			border:2px solid;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			
+		}
+		input{
+			width:50%;
+			margin:5px;
+			padding:10px;
+			border:2px solid;
+			border-radius: 10px;;
+			
+		}
+		button{
+			width:15%;
+			border:2px solid;
+			border-radius: 10px;
+			padding:7px;
+			margin: 10px;
+			background-color: brown;
+			color: #ffffff;
+		}
+		p{
+			margin: 10px;
+		}
+		a{
+			text-decoration: none;
+			color:blue;
+			font-size: large;
+		}
+		#signup-msg{
+			color:red
+		}
+	</style>
+	</head>
+	<body>
+	  <div id="signup-container">
+		<h3>Register</h3>
+		<input type="email" placeholder="Enter Email" id="signup-email">
+		<input type="text" placeholder="Enter Name" id="signup-name">
+		<input type="password" placeholder="Enter Password" id="signup-password">
+		<button id="signup-btn">Register</button>
+		<p>Already have an account?     <a href="./login.html" target="_blank">Login</a></p>
+		<p id="signup-msg"></p>
+	  </div>
+	
+	  <script type="module">
+		const base = "https://student-3a9dd-default-rtdb.asia-southeast1.firebasedatabase.app/users";
+	
+		document.getElementById("signup-btn").addEventListener("click", async (e) => {
+		  e.preventDefault();
+	
+		  const email = document.getElementById("signup-email").value.trim();
+		  const name = document.getElementById("signup-name").value.trim();
+		  const password = document.getElementById("signup-password").value.trim();
+	
+		  if (!email || !name || !password) {
+			document.getElementById("signup-msg").textContent = "Please fill in all fields.";
+			return;
+		  }
+    const res = await fetch(`${base}.json`);
+    const users = await res.json();
+
+	//console.log(users)
+
+    // Step 2: Check for duplicate email
+	let vary = Object.values(users)
+
+    const exists = users && vary.some(user => user.email === email);
+	
+    if (exists) {
+		document.getElementById("signup-msg").textContent = "Email already exists. Please log in or use a different email.";
+      return;
+    }
+	
+		  const newUser = { email, name, password };
+	
+		  try {
+			const res = await fetch(`${base}.json`, {
+			  method: "POST",
+			  headers: {
+				"Content-Type": "application/json"
+			  },
+			  body: JSON.stringify(newUser)
+			});
+
+			if (res.ok) {
+			  document.getElementById("signup-msg").textContent = "Registration Successful! Please log in.";
+			  setTimeout(() => window.location.href = "login.html", 1500);
+			} else {
+			  document.getElementById("signup-msg").textContent = "Registration failed!";
+			}
+		  } catch (err) {
+			console.error(err);
+			document.getElementById("signup-msg").textContent = "An error occurred.";
+		  }
+		});
+		// async function dispalyUser(){
+		// 	let res=await fetch(`${base}.json`)
+		// 	let dat =await res.json()
+		// 	let vary = Object.entries(dat).map(([id,user])=>({id,...user}))
+		// 	console.log(vary)
+		// }
+		// dispalyUser()
+	  </script>
+	</body>
+	</html>
+	

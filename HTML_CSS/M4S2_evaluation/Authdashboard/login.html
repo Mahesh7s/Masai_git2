@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!DOCTYPE html>
+	<html>
+	<head>
+	  <meta charset="UTF-8">
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	  <title>Login</title>
+	  <style>
+		*{
+			margin:0px;
+			padding:0px;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+		}
+		body{
+			background-color: #ffffff;
+			height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		h3{
+			text-align: center;
+			margin:20px;
+			
+		}
+		#login-container{
+			background-color: aliceblue;
+			width:90%;
+			border:2px solid;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			
+		}
+		input{
+			width:50%;
+			margin:5px;
+			padding:10px;
+			border:2px solid;
+			border-radius: 10px;;
+			
+		}
+		button{
+			width:15%;
+			border:2px solid;
+			border-radius: 10px;
+			padding:7px;
+			margin: 10px;
+			background-color: brown;
+			color: #ffffff;
+		}
+		p{
+			margin: 10px;
+		}
+		a{
+			text-decoration: none;
+			color:blue;
+			font-size: large;
+		}
+		#login-msg{
+			color:red
+		}
+	</style>
+	</head>
+	<body>
+	  <div id="login-container">
+		<h3>Login</h3>
+		<input type="email" placeholder="Enter Email" id="login-email">
+		<input type="text" placeholder="Enter Name" id="login-name">
+		<input type="password" placeholder="Enter Password" id="login-password">
+		<button id="login-btn">Login</button>
+		<p>Don't have account?<a href="./register.html">Sign Up</a></p>
+		<p id="login-msg"></p>
+	  </div>
+	  </body>
+	  <script type="module">
+const base = "https://student-3a9dd-default-rtdb.asia-southeast1.firebasedatabase.app/users";
+	
+	document.getElementById("login-btn").addEventListener("click", async (e) => {
+	  e.preventDefault();
+
+	  const email = document.getElementById("login-email").value.trim();
+	  const name = document.getElementById("login-name").value.trim();
+	  const password = document.getElementById("login-password").value.trim();
+
+	  if (!email || !name || !password) {
+		document.getElementById("login-msg").textContent = "Please fill in all fields.";
+		return;
+	  }
+	  try {
+    const res = await fetch(`${base}.json`);
+    const users = await res.json();
+
+    // Convert object to array
+    const usersArray = users ? Object.entries(users).map(([id, user]) => ({ id, ...user })) : [];
+ console.log("###########", usersArray)
+    // Check for match
+    const foundUser = usersArray.find(user => user.email === email && user.password === password);
+	console.log("*************", foundUser)
+    if (foundUser) {
+      // Save user to localStorage or sessionStorage (optional)
+      localStorage.setItem("currentUser", JSON.stringify(foundUser));
+
+      // Redirect to dashboard
+      window.location.href = "dashboard.html";
+    } else {
+      document.getElementById("login-msg").textContent = "Wrong credentials! Try again.";
+    }
+  } catch (err) {
+    console.error(err);
+    document.getElementById("login-msg").textContent = "An error occurred. Please try again.";
+  }
+	})
+</script>
+</html>

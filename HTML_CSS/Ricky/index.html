@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ricky and Morty</title>
+	<style>
+		#container {
+             width:90%;margin:auto;
+			 text-align: center;
+			 display:grid;
+			 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			 gap:20px;
+		}
+       
+		.dark{
+			background-color: aquamarine;;
+		}
+		.light{
+			background-color: blue;
+		}
+
+
+
+		img{
+			max-width:100%;
+		}
+		.img-card{
+			max-width:20%;
+			min-width: 90%;
+			border:2px solid ;
+		}
+		.pagination{
+			/* border:2px solid; */
+			display:flex;
+			align-items: center;
+			justify-content: space-evenly;
+		}
+		button{
+			width:15%;
+			padding:5px;
+			color:aliceblue;
+			background-color: blueviolet;
+			border: none;
+			border-radius: 20px;
+			font-size: large;
+			margin: 10px;
+			margin-bottom: 20px;
+		}
+		span{
+			font-size: large;
+		}
+		#view{
+			width:15%;
+			font-size: small;
+		}
+		@media (min-width : 1200px){
+			#container {
+             width:90%;margin:auto;
+			 text-align: center;
+			 display:grid;
+			 grid-template-columns: repeat(3,1fr);
+			 gap:20px;
+		}
+		.img-card{
+			max-width:50%;
+			min-width: 90%;
+			border:2px solid ;
+		}
+		img{
+			width:100%;
+		}
+		}
+	</style>
+</head>
+<body>
+	<h1>Ricky and Morty API</h1>
+	<select name="theme" id="theme">
+		<option value="light">Light</option>
+		<option value="dark">Dark</option>
+	</select>
+	<div id="container"></div>
+	<div class="pagination">
+    <button id="prev">Previous</button>
+    <span id="page-number">Page 1</span>
+    <button id="next">Next</button>
+	</br>
+	<footer id="clock">Loading...</footer>
+</body>
+<script>
+	let currentPage=1;
+let charperpage = 6;
+
+const savedTheme = localStorage.getItem("theme") || "dark";
+document.body.className = savedTheme;
+document.getElementById("theme").value = savedTheme; // Update dropdown
+
+// When user changes theme
+document.getElementById("theme").addEventListener("change", () => {
+  const selectedTheme = document.getElementById("theme").value;
+  localStorage.setItem("theme", selectedTheme);
+  document.body.className = selectedTheme;
+});
+
+
+const allCharacters = [];
+async function getAllCharacters() {
+  
+  
+  const firstPage = await fetch('https://rickandmortyapi.com/api/character');
+  const firstData = await firstPage.json();
+  allCharacters.push(...firstData.results);
+
+  const totalPages = firstData.info.pages;
+  //console.log(totalPages)
+
+  for (let i = 2; i <= totalPages; i++) {
+    const res = await fetch(`https://rickandmortyapi.com/api/character?page=${i}`);
+    const data = await res.json();
+    allCharacters.push(...data.results);
+  }
+     displayCharacters(currentPage);
+ // console.log(allCharacters) 
+}
+ function displayCharacters(page){
+  let container=document.getElementById("container")
+  container.innerHTML=""
+ let start = (currentPage-1)*charperpage;
+ let end = start+charperpage;
+ let data = allCharacters.slice(start,end)
+
+
+  //console.log(data)
+  data.forEach(element => {
+	let div = document.createElement("div")
+	div.className="img-card"
+	div.innerHTML=`
+	<img src="${element.image}" alt="${element.name}">
+	<h3>TITLE:${element.name}</h3>
+	<p>SPECIES:${element.species}</p>
+	<p>STATUS:${element.status}</p>
+	<button id="view" data-id="${element.id}">VIEW MORE</button>
+
+	`
+	container.appendChild(div)
+  });
+  document.getElementById("page-number").innerText=`Page ${page}`
+  document.getElementById("prev").disabled = page === 1;
+  document.getElementById("next").disabled = end >= allCharacters.length;
+ const viewMoreButtons = container.querySelectorAll("#view");
+  viewMoreButtons.forEach(button => {
+    button.addEventListener("click", (e) => {
+      const charId = e.target.getAttribute("data-id");
+      loadMore(charId); // Call loadMore function when button is clicked
+    });
+  });
+ 
+ }
+
+function loadMore(id){
+ localStorage.setItem("charid",id)
+  localStorage.setItem("lastPage", currentPage);
+ window.open("details.html","_blank")
+}
+
+document.getElementById("prev").addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage--;
+        displayCharacters(currentPage);
+      }
+    });
+
+    document.getElementById("next").addEventListener("click", () => {
+      if ((currentPage * charperpage) < allCharacters.length) {
+        currentPage++;
+        displayCharacters(currentPage);
+      }
+    });
+
+
+	function updateClock(){
+		let now = new Date();
+		let hours = now.getHours().toString().padStart(2,"0");
+		let minutes = now.getMinutes().toString().padStart(2,"0");
+		let seconds = now.getSeconds().toString().padStart(2,"0")
+		const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const months = ["January", "February", "March", "April", "May", "June",
+                      "July", "August", "September", "October", "November", "December"];
+
+      const day = weekdays[now.getDay()];
+      const date = now.getDate();
+      const month = months[now.getMonth()];
+      const year = now.getFullYear();
+
+      const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${date}, ${year}`;
+
+      document.getElementById("clock").textContent = timeString;
+
+	}
+	setInterval(updateClock,1000)
+	updateClock()
+
+
+getAllCharacters()
+</script>
+</html>

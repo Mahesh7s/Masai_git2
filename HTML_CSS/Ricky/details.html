@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		.dark{
+			background-color: aquamarine;
+		}
+		.light{
+			background-color: blue;
+		}
+	</style>
+</head>
+<body>
+	<h1>Character Details</h1>
+	<select name="theme" id="theme">
+		<option value="light">Light</option>
+		<option value="dark">Dark</option>
+	</select>
+	<button id="backBtn">⬅️ Go Back</button>
+
+  <div id="container"></div>
+
+  <footer id="clock">Loading...</footer>
+	
+</body>
+ <script type="module">
+
+  let savedTheme = localStorage.getItem("theme") || "light"
+  document.getElementById("theme").value = savedTheme;
+  document.body.className=savedTheme;
+
+  document.getElementById("theme").addEventListener("change",()=>{
+    let theme = document.getElementById("theme").value;
+	localStorage.setItem("theme",theme)
+	document.body.className=theme
+  })
+
+
+
+	//import { updateClock} from "rickyandmorty.html"
+	 
+	updateClock("clock")
+	setInterval(updateClock("clock"),1000)
+	let id = localStorage.getItem("charid")
+	let data=[]
+	console.log(id)
+	let div = document.getElementById("container")
+    async function fetchdata(){
+        let res = await fetch(`https://rickandmortyapi.com/api/character/${id}`)
+		let dat = res.json()
+		return dat
+	}
+	document.getElementById("backBtn").addEventListener("click", () => {
+   const lastPage = localStorage.getItem("lastPage") || 1;
+  window.location.href = `index.html?page=${lastPage}`;
+});
+
+
+	async function getData(){
+		data = await fetchdata()
+		div.innerHTML=""
+		div.innerHTML=`
+		
+		<img src="${data.image}" alt="${data.name}">
+		<h3>Title: ${data.name}</h3>
+		<p>Status: ${data.status}</p>
+		<p>Species: ${data.species}</p>
+		<p>Type:${data.type || "Not Available" } </p>
+		<p> Gender: ${data.gender}</p>
+		<p>Origin Location : ${data.origin.name}</p>
+		<p>Current Location : ${data.location.name}</p>
+		<p>Episode: ${data.episode}</p>
+
+		
+		`
+		
+		console.log(data)
+	}
+
+getData()
+
+ function updateClock(){
+		let now = new Date();
+		let hours = now.getHours().toString().padStart(2,"0");
+		let minutes = now.getMinutes().toString().padStart(2,"0");
+		let seconds = now.getSeconds().toString().padStart(2,"0")
+		const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const months = ["January", "February", "March", "April", "May", "June",
+                      "July", "August", "September", "October", "November", "December"];
+
+      const day = weekdays[now.getDay()];
+      const date = now.getDate();
+      const month = months[now.getMonth()];
+      const year = now.getFullYear();
+
+      const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${date}, ${year}`;
+
+      document.getElementById("clock").textContent = timeString;
+
+	}
+	setInterval(updateClock,1000)
+	updateClock()
+
+
+	//localStorage.removeItem("charid")
+
+
+ </script>
+ 
+
+</html>
